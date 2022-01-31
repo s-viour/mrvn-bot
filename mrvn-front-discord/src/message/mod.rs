@@ -137,6 +137,7 @@ pub enum ResponseMessage {
         voice_channel_id: ChannelId,
     },
     Pet,
+    ShinyPet,
 }
 
 impl ActionMessage {
@@ -440,6 +441,9 @@ impl ResponseMessage {
             ResponseMessage::Pet => config
                 .get_raw_message("response.pet")
                 .to_string(),
+            ResponseMessage::ShinyPet => config
+                .get_raw_message("response.shiny_pet")
+                .to_string(),
         }
     }
 
@@ -457,7 +461,8 @@ impl ResponseMessage {
             | ResponseMessage::Stopped { .. }
             | ResponseMessage::StopMoreVotesNeeded { .. }
             | ResponseMessage::ImageEmbed { .. } 
-            | ResponseMessage::Pet => false,
+            | ResponseMessage::Pet 
+            | ResponseMessage::ShinyPet => false,
             ResponseMessage::NoMatchingSongsError
             | ResponseMessage::NotInVoiceChannelError
             | ResponseMessage::UnsupportedSiteError
@@ -482,6 +487,7 @@ impl ResponseMessage {
         match self {
             ResponseMessage::ImageEmbed { image_url } => embed.image(image_url),
             ResponseMessage::Pet => embed.image(self.to_string(config)),
+            ResponseMessage::ShinyPet => embed.image(self.to_string(config)),
             _ => embed.description(self.to_string(config)),
         }
     }

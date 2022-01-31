@@ -8,6 +8,7 @@ use mrvn_back_ytdl::{
     Brain, EndedHandler, GuildSpeakerEndedHandle, GuildSpeakerEndedRef, GuildSpeakerRef, Song,
 };
 use mrvn_model::{AppModel, GuildModel, NextEntry, ReplaceStatus, VoteStatus, VoteType};
+use rand::distributions::{Distribution, Uniform};
 use serenity::model::id::ChannelId;
 use serenity::{
     model::prelude::{application_command, interactions, GuildId, UserId},
@@ -819,9 +820,17 @@ impl Frontend {
     async fn handle_pet_command(
         self: &Arc<Self>,
     ) -> Result<Vec<crate::message::Message>, crate::error::Error> {
-        Ok(vec![Message::Response(
-            ResponseMessage::Pet
-        )])
+        let between = Uniform::from(1..8192);
+        let mut rng = rand::thread_rng();
+        if between.sample(&mut rng) == 1 {
+            Ok(vec![Message::Response(
+                ResponseMessage::ShinyPet
+            )])
+        } else {
+            Ok(vec![Message::Response(
+                ResponseMessage::Pet
+            )])
+        }
     }
 
     async fn handle_playback_ended(

@@ -812,6 +812,7 @@ dependencies = [
  "mrvn-back-ytdl",
  "mrvn-model",
  "pretty_env_logger",
+ "rand 0.8.4",
  "regex",
  "serde",
  "serde_json",

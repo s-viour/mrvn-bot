@@ -58,6 +58,7 @@
     "response.nothing_is_queued_error": ":robot: :weary: Nothing is queued to play in <#{voice_channel_id}>",
     "response.nothing_is_playing_error": ":robot: :weary: Nothing is playing in <#{voice_channel_id}>",
     "response.already_playing_error": ":robot: :weary: A song is already playing in <#{voice_channel_id}>",
-    "response.pet": "https://c.tenor.com/nwbxEGQINOsAAAAd/pet-dog.gif"
+    "response.pet": "https://c.tenor.com/nwbxEGQINOsAAAAd/pet-dog.gif",
+    "response.shiny_pet": "https://c.tenor.com/UTZOodcQt3IAAAAC/doggo-petting.gif"
   }
 }
