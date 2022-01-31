@@ -136,6 +136,7 @@ pub enum ResponseMessage {
     AlreadyPlayingError {
         voice_channel_id: ChannelId,
     },
+    Pet,
 }
 
 impl ActionMessage {
@@ -436,6 +437,9 @@ impl ResponseMessage {
                 )
             }
             ResponseMessage::ImageEmbed { image_url } => image_url.clone(),
+            ResponseMessage::Pet => config
+                .get_raw_message("response.pet")
+                .to_string(),
         }
     }
 
@@ -452,7 +456,8 @@ impl ResponseMessage {
             | ResponseMessage::SkipMoreVotesNeeded { .. }
             | ResponseMessage::Stopped { .. }
             | ResponseMessage::StopMoreVotesNeeded { .. }
-            | ResponseMessage::ImageEmbed { .. } => false,
+            | ResponseMessage::ImageEmbed { .. } 
+            | ResponseMessage::Pet => false,
             ResponseMessage::NoMatchingSongsError
             | ResponseMessage::NotInVoiceChannelError
             | ResponseMessage::UnsupportedSiteError
@@ -476,6 +481,7 @@ impl ResponseMessage {
         });
         match self {
             ResponseMessage::ImageEmbed { image_url } => embed.image(image_url),
+            ResponseMessage::Pet => embed.image(self.to_string(config)),
             _ => embed.description(self.to_string(config)),
         }
     }

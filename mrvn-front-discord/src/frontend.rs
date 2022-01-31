@@ -235,6 +235,10 @@ impl Frontend {
                 self.handle_stop_command(ctx, user_id, guild_id, guild_model)
                     .await
             }
+            "pet" => {
+                log::debug!("Received pet");
+                self.handle_pet_command().await
+            }
             command_name => {
                 match self
                     .config
@@ -810,6 +814,14 @@ impl Frontend {
                 )])
             }
         }
+    }
+
+    async fn handle_pet_command(
+        self: &Arc<Self>,
+    ) -> Result<Vec<crate::message::Message>, crate::error::Error> {
+        Ok(vec![Message::Response(
+            ResponseMessage::Pet
+        )])
     }
 
     async fn handle_playback_ended(

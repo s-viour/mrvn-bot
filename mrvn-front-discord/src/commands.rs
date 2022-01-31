@@ -68,6 +68,14 @@ fn stop_command(
         .description("Vote to skip the current song and stop playback.")
 }
 
+fn pet_command(
+    command: &mut serenity::builder::CreateApplicationCommand,
+) -> &mut serenity::builder::CreateApplicationCommand {
+    command
+        .name("pet")
+        .description("Pet the bot!")
+}
+
 pub async fn register_commands(
     http: impl AsRef<serenity::http::Http>,
     guild_id: Option<GuildId>,
@@ -84,6 +92,7 @@ pub async fn register_commands(
                 guild_id.create_application_command(http_ref, pause_command),
                 guild_id.create_application_command(http_ref, skip_command),
                 guild_id.create_application_command(http_ref, stop_command),
+                guild_id.create_application_command(http_ref, pet_command),
             )?;
 
             if let Some(greets) = &config.greets {
@@ -106,7 +115,8 @@ pub async fn register_commands(
                         .create_application_command(replace_command)
                         .create_application_command(pause_command)
                         .create_application_command(skip_command)
-                        .create_application_command(stop_command);
+                        .create_application_command(stop_command)
+                        .create_application_command(pet_command);
 
                     if let Some(greets) = &config.greets {
                         for (greet_command, greet) in greets {
