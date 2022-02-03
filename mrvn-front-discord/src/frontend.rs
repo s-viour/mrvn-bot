@@ -240,6 +240,10 @@ impl Frontend {
                 log::debug!("Received pet");
                 self.handle_pet_command().await
             }
+            "nowplaying" => {
+                log::debug!("Received now-playing command");
+                self.handle_nowplaying_command(ctx, user_id, guild_id).await
+            }
             command_name => {
                 match self
                     .config
@@ -667,6 +671,46 @@ impl Frontend {
             _ => {
                 log::trace!(
                     "No speakers are in the user's voice channel, playback will not change"
+                );
+                Ok(vec![Message::Response(
+                    ResponseMessage::NothingIsPlayingError {
+                        voice_channel_id: channel_id,
+                    },
+                )])
+            }
+        }
+    }
+
+    async fn handle_nowplaying_command(
+        self: &Arc<Self>,
+        ctx: &Context,
+        user_id: UserId,
+        guild_id: GuildId,
+    ) -> Result<Vec<crate::message::Message>, crate::error::Error> {
+        let delegate = ModelDelegate::new(ctx, guild_id).await?;
+        let channel_id = match delegate.get_user_voice_channel(user_id) {
+            Some(channel) => channel,
+            None => {
+                return Ok(vec![Message::Response(
+                    ResponseMessage::NotInVoiceChannelError,
+                )])
+            }
+        };
+
+        let guild_speakers_handle = self.backend_brain.guild_speakers(guild_id);
+        let mut guild_speakers_ref = guild_speakers_handle.lock().await;
+        match guild_speakers_ref.find_active_in_channel(channel_id) {
+            Some((_, active_metadata)) => {
+                Ok(vec![Message::Response(ResponseMessage::NowPlaying {
+                    song_title: active_metadata.title.clone(),
+                    song_url: active_metadata.url.clone(),
+                    voice_channel_id: channel_id,
+                    user_id: active_metadata.user_id,
+                })])
+            }
+            _ => {
+                log::trace!(
+                    "No speakers are in the user's voice channel, there is nothing playing"
                 );
                 Ok(vec![Message::Response(
                     ResponseMessage::NothingIsPlayingError {

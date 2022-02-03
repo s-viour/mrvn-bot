@@ -138,6 +138,12 @@ pub enum ResponseMessage {
     },
     Pet,
     ShinyPet,
+    NowPlaying {
+        song_title: String,
+        song_url: String,
+        voice_channel_id: ChannelId,
+        user_id: UserId,
+    },
 }
 
 impl ActionMessage {
@@ -444,6 +450,19 @@ impl ResponseMessage {
             ResponseMessage::ShinyPet => config
                 .get_raw_message("response.shiny_pet")
                 .to_string(),
+            ResponseMessage::NowPlaying {
+                song_title,
+                song_url,
+                voice_channel_id,
+                user_id,
+            } => {
+                format!("Currently playing [{}](<{}>) in <#{}> requested by <@{}>.",
+                    song_title,
+                    song_url,
+                    voice_channel_id,
+                    user_id
+                )
+            }
         }
     }
 
@@ -462,7 +481,8 @@ impl ResponseMessage {
             | ResponseMessage::StopMoreVotesNeeded { .. }
             | ResponseMessage::ImageEmbed { .. } 
             | ResponseMessage::Pet 
-            | ResponseMessage::ShinyPet => false,
+            | ResponseMessage::ShinyPet 
+            | ResponseMessage::NowPlaying { .. } => false,
             ResponseMessage::NoMatchingSongsError
             | ResponseMessage::NotInVoiceChannelError
             | ResponseMessage::UnsupportedSiteError
