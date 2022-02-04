@@ -456,11 +456,16 @@ impl ResponseMessage {
                 voice_channel_id,
                 user_id,
             } => {
-                format!("Currently playing [{}](<{}>) in <#{}> requested by <@{}>.",
-                    song_title,
-                    song_url,
-                    voice_channel_id,
-                    user_id
+                let channel_id_string = voice_channel_id.0.to_string();
+                let user_id_string = user_id.0.to_string();
+                config.get_message(
+                    "response.now_playing",
+                    &[
+                        ("song_title", song_title),
+                        ("song_url", song_url),
+                        ("voice_channel_id", &channel_id_string),
+                        ("user_id", &user_id_string),
+                    ],
                 )
             }
         }
