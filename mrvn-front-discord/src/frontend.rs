@@ -176,32 +176,30 @@ impl Frontend {
         let user_id = command.user.id;
         match command.data.name.as_str() {
             "play" => {
-                let maybe_term = match command
+                let term = match command
                     .data
                     .options
                     .get(0)
                     .and_then(|val| val.resolved.as_ref())
-                {
-                    Some(
+                    .unwrap() {
                         application_command::ApplicationCommandInteractionDataOptionValue::String(
                             val,
-                        ),
-                    ) => Some(val.clone()),
-                    _ => None,
+                        ) => val.clone(),
+                        _ => {
+                            // TODO: remove this panic!
+                            // i'm unsure how to handle this at the moment, but dying isn't a good one
+                            panic!("this should be impossible!")
+                        }
                 };
 
-                match maybe_term {
-                    Some(term) => {
-                        log::debug!("Received play, interpreted as queue-play \"{}\"", term);
-                        self.handle_queue_play_command(ctx, user_id, guild_id, guild_model, &term)
+                log::debug!("Received play \"{}\"", term);
+                self.handle_queue_play_command(ctx, user_id, guild_id, guild_model, &term)
                             .await
-                    }
-                    None => {
-                        log::debug!("Received play, interpreted as unpause");
-                        self.handle_unpause_command(ctx, user_id, guild_id, guild_model)
-                            .await
-                    }
-                }
+            }
+            "resume" => {
+                log::debug!("Received resume");
+                self.handle_unpause_command(ctx, user_id, guild_id, guild_model)
+                    .await
             }
             "replace" => {
                 let term = match command

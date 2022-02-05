@@ -27,7 +27,7 @@ fn play_command(
                 .name("term")
                 .description("A search term or song link.")
                 .kind(application_command::ApplicationCommandOptionType::String)
-                .required(false)
+                .required(true)
         })
 }
 
@@ -84,6 +84,14 @@ fn nowplaying_command(
         .description("Get the currently playing song")
 }
 
+fn resume_command(
+    command: &mut serenity::builder::CreateApplicationCommand,
+) -> &mut serenity::builder::CreateApplicationCommand {
+    command
+        .name("resume")
+        .description("Resume a paused song")
+}
+
 pub async fn register_commands(
     http: impl AsRef<serenity::http::Http>,
     guild_id: Option<GuildId>,
@@ -102,6 +110,7 @@ pub async fn register_commands(
                 guild_id.create_application_command(http_ref, stop_command),
                 guild_id.create_application_command(http_ref, pet_command),
                 guild_id.create_application_command(http_ref, nowplaying_command),
+                guild_id.create_application_command(http_ref, resume_command),
             )?;
 
             if let Some(greets) = &config.greets {
