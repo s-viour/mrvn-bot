@@ -185,16 +185,12 @@ impl Frontend {
                         application_command::ApplicationCommandInteractionDataOptionValue::String(
                             val,
                         ) => val.clone(),
-                        _ => {
-                            // TODO: remove this panic!
-                            // i'm unsure how to handle this at the moment, but dying isn't a good one
-                            panic!("this should be impossible!")
-                        }
+                    _ => "".to_string(),
                 };
 
                 log::debug!("Received play \"{}\"", term);
                 self.handle_queue_play_command(ctx, user_id, guild_id, guild_model, &term)
-                            .await
+                    .await
             }
             "resume" => {
                 log::debug!("Received resume");
@@ -242,21 +238,9 @@ impl Frontend {
                 log::debug!("Received now-playing command");
                 self.handle_nowplaying_command(ctx, user_id, guild_id).await
             }
-            command_name => {
-                match self
-                    .config
-                    .greets
-                    .as_ref()
-                    .and_then(|greets| greets.get(command_name))
-                {
-                    Some(greet) => Ok(vec![Message::Response(ResponseMessage::ImageEmbed {
-                        image_url: greet.image_url.clone(),
-                    })]),
-                    None => Err(crate::error::Error::UnknownCommand(
-                        command_name.to_string(),
-                    )),
-                }
-            }
+            command_name => Err(crate::error::Error::UnknownCommand(
+                command_name.to_string(),
+            )),
         }
     }
 
