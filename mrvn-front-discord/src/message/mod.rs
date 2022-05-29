@@ -136,6 +136,7 @@ pub enum ResponseMessage {
     AlreadyPlayingError {
         voice_channel_id: ChannelId,
     },
+<<<<<<< HEAD
     Pet,
     ShinyPet,
     NowPlaying {
@@ -144,6 +145,14 @@ pub enum ResponseMessage {
         voice_channel_id: ChannelId,
         user_id: UserId,
     },
+=======
+
+    StreakWait,
+    Streak {
+        streak_length: u64,
+    },
+    NoStreak,
+>>>>>>> 25da9861779fb430f167acfd412312246e44a676
 }
 
 impl ActionMessage {
@@ -444,6 +453,7 @@ impl ResponseMessage {
                 )
             }
             ResponseMessage::ImageEmbed { image_url } => image_url.clone(),
+<<<<<<< HEAD
             ResponseMessage::Pet => config
                 .get_raw_message("response.pet")
                 .to_string(),
@@ -468,6 +478,20 @@ impl ResponseMessage {
                     ],
                 )
             }
+=======
+
+            ResponseMessage::StreakWait => {
+                config.get_raw_message("response.streak_wait").to_string()
+            }
+            ResponseMessage::Streak { streak_length } => {
+                let streak_length_string = streak_length.to_string();
+                config.get_message(
+                    "response.streak",
+                    &[("streak_length", &streak_length_string)],
+                )
+            }
+            ResponseMessage::NoStreak => config.get_raw_message("response.no_streak").to_string(),
+>>>>>>> 25da9861779fb430f167acfd412312246e44a676
         }
     }
 
@@ -484,10 +508,17 @@ impl ResponseMessage {
             | ResponseMessage::SkipMoreVotesNeeded { .. }
             | ResponseMessage::Stopped { .. }
             | ResponseMessage::StopMoreVotesNeeded { .. }
+<<<<<<< HEAD
             | ResponseMessage::ImageEmbed { .. } 
             | ResponseMessage::Pet 
             | ResponseMessage::ShinyPet 
             | ResponseMessage::NowPlaying { .. } => false,
+=======
+            | ResponseMessage::ImageEmbed { .. }
+            | ResponseMessage::StreakWait
+            | ResponseMessage::Streak { .. }
+            | ResponseMessage::NoStreak => false,
+>>>>>>> 25da9861779fb430f167acfd412312246e44a676
             ResponseMessage::NoMatchingSongsError
             | ResponseMessage::NotInVoiceChannelError
             | ResponseMessage::UnsupportedSiteError

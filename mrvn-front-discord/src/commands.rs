@@ -31,6 +31,12 @@ fn play_command(
         })
 }
 
+fn resume_command(
+    command: &mut serenity::builder::CreateApplicationCommand,
+) -> &mut serenity::builder::CreateApplicationCommand {
+    command.name("resume").description("Resume a paused song.")
+}
+
 fn replace_command(
     command: &mut serenity::builder::CreateApplicationCommand,
 ) -> &mut serenity::builder::CreateApplicationCommand {
@@ -84,14 +90,6 @@ fn nowplaying_command(
         .description("Get the currently playing song")
 }
 
-fn resume_command(
-    command: &mut serenity::builder::CreateApplicationCommand,
-) -> &mut serenity::builder::CreateApplicationCommand {
-    command
-        .name("resume")
-        .description("Resume a paused song")
-}
-
 pub async fn register_commands(
     http: impl AsRef<serenity::http::Http>,
     guild_id: Option<GuildId>,
@@ -104,6 +102,7 @@ pub async fn register_commands(
             log::trace!("Registering guild application commands");
             futures::try_join!(
                 guild_id.create_application_command(http_ref, play_command),
+                guild_id.create_application_command(http_ref, resume_command),
                 guild_id.create_application_command(http_ref, replace_command),
                 guild_id.create_application_command(http_ref, pause_command),
                 guild_id.create_application_command(http_ref, skip_command),
@@ -112,16 +111,6 @@ pub async fn register_commands(
                 guild_id.create_application_command(http_ref, nowplaying_command),
                 guild_id.create_application_command(http_ref, resume_command),
             )?;
-
-            if let Some(greets) = &config.greets {
-                for (greet_command, greet) in greets {
-                    guild_id
-                        .create_application_command(http_ref, |command| {
-                            command.name(greet_command).description(&greet.description)
-                        })
-                        .await?;
-                }
-            }
         }
         None => {
             log::trace!("Registering global application commands");
@@ -130,19 +119,12 @@ pub async fn register_commands(
                 |commands| {
                     commands
                         .create_application_command(play_command)
+                        .create_application_command(resume_command)
                         .create_application_command(replace_command)
                         .create_application_command(pause_command)
                         .create_application_command(skip_command)
                         .create_application_command(stop_command)
                         .create_application_command(pet_command);
-
-                    if let Some(greets) = &config.greets {
-                        for (greet_command, greet) in greets {
-                            commands.create_application_command(|command| {
-                                command.name(greet_command).description(&greet.description)
-                            });
-                        }
-                    }
 
                     commands
                 },
